@@ -109,10 +109,6 @@ int terminate(lua_State *L) {
 	return 0;
 }
 
-/* int spell_check(lua_State *L) { */
-/* 	return 0; */
-/* } */
-
 int hyphenate(lua_State *L) {
 
 	struct VoikkoHandle *handle;
@@ -156,6 +152,22 @@ int insert_hyphens(lua_State *L) {
 	return 1;
 }
 
+int spell(lua_State *L) {
+
+	struct VoikkoHandle *handle;
+	int code;
+
+	const char *word = lua_tostring(L, 1);
+
+	handle = get_handle(L);
+
+	code = voikkoSpellCstr(handle, word);
+
+	lua_pushinteger(L, code);
+
+	return 1;
+}
+
 int suggest(lua_State *L) {
 
 	struct VoikkoHandle *handle;
@@ -186,10 +198,10 @@ int suggest(lua_State *L) {
 
 const luaL_Reg voikko_funcs[] = {
 
-	{"suggest", suggest},
 	{"hyphenate", hyphenate},
+	{"suggest", suggest},
 	{"set_option", set_option},
-	/* {"spell_check", spell_check}, */
+	{"spell", spell},
 	{NULL, NULL}
 };
 

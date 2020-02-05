@@ -36,6 +36,35 @@ describe("tests", function ()
 
    end)
 
+   describe("spell", function ()
+
+      it("should give return 1 (spell ok)", function ()
+         local code = voikko.spell("sydämen")
+         assert.are.equals(1, code)
+      end)
+
+      it("should give return 0 (spell failed)", function ()
+         local code = voikko.spell("koiro")
+         assert.are.equals(0, code)
+      end)
+
+      it("should give return 0 (spell failed)", function ()
+         local code = voikko.spell("asdfghjkl")
+         assert.are.equals(0, code)
+      end)
+
+      it("should give return 0 (spell failed)", function ()
+         local code = voikko.spell("αβγδε")
+         assert.are.equals(0, code)
+      end)
+
+      it("should give return 1 (spell ok)", function ()
+         local code = voikko.spell("oleskeluyhteiskunta")
+         assert.are.equals(1, code)
+      end)
+
+   end)
+
    describe("suggest", function ()
 
       it("should give suggestions { \"sydämen\" }", function ()
