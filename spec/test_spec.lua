@@ -23,6 +23,18 @@ describe("tests", function ()
          local word = voikko.hyphenate("lentokonesuihkuturbiinimoottoriapumekaanikko")
          assert.are.equals("   - - - -   - -  -  - -   - - -- - -  -  - ", word)
       end)
+
+      it("should hyphenate correctly the word \"sika-nautajauheliha\"", function ()
+         local word = voikko.hyphenate("sika-nautajauheliha")
+         assert.are.equals("  - =   - -  - - - ", word)
+      end)
+
+      it("should give whitespaces string", function ()
+         local word = voikko.hyphenate("asdfghjkl")
+         assert.are.equals("         ", word)
+      end)
+
+   end)
    end)
 
 
