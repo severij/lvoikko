@@ -35,7 +35,34 @@ describe("tests", function ()
       end)
 
    end)
-   end)
 
+   describe("suggest", function ()
+
+      it("should give suggestions { \"sydämen\" }", function ()
+         local suggestions = voikko.suggest("sydämmen")
+         assert.are.same({ "sydämen" }, suggestions)
+      end)
+
+      it("should give suggestions { \"vielä\", \"vikellä\", \"vipellä\", \"vihellä\", \"Villeä\" }", function ()
+         local suggestions = voikko.suggest("viellä")
+         assert.are.same({ "vielä", "vikellä", "vipellä", "vihellä", "Villeä" }, suggestions)
+      end)
+
+      it("should give suggestions { \"jauheliha\", \"jauheenliha\", \"jouhenliha\" }", function ()
+         local suggestions = voikko.suggest("jauhenliha")
+         assert.are.same({ "jauheliha", "jauheenliha", "jouhenliha" }, suggestions)
+      end)
+
+      it("should give suggestions { \"kuulostaa\", \"kuullosta\", \"kuullostaan\", \"kuullostapa\" }", function ()
+         local suggestions = voikko.suggest("kuullostaa")
+         assert.are.same({ "kuulostaa", "kuullosta", "kuullostaan", "kuullostapa" }, suggestions)
+      end)
+
+      it("should give no suggestions", function ()
+         local suggestions = voikko.suggest("asdfghjkl")
+         assert.is_nil(suggestions)
+      end)
+
+   end)
 
 end)
