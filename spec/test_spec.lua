@@ -11,17 +11,17 @@ describe("tests", function ()
 
       it("should hyphenate correctly the word \"kukkaruukku\"", function ()
          local word = voikko.hyphenate("kukkaruukku")
-         assert.are.equals(word, "   - -   - ")
+         assert.are.equals("   - -   - ", word)
       end)
 
       it("should hyphenate correctly the word \"mitääntekemättömyyksillänsäkään\"", function ()
          local word = voikko.hyphenate("mitääntekemättömyyksillänsäkään")
-         assert.are.equals(word, "  -   - - -  - -   -  -  - -   ")
+         assert.are.equals("  -   - - -  - -   -  -  - -   ", word)
       end)
 
       it("should hyphenate correctly the word \"lentokonesuihkuturbiinimoottoriapumekaanikko\"", function ()
          local word = voikko.hyphenate("lentokonesuihkuturbiinimoottoriapumekaanikko")
-         assert.are.equals(word, "   - - - -   - -  -  - -   - - -- - -  -  - ")
+         assert.are.equals("   - - - -   - -  -  - -   - - -- - -  -  - ", word)
       end)
    end)
 
