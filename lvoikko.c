@@ -156,7 +156,7 @@ int insert_hyphens(lua_State *L) {
 	return 1;
 }
 
-int get_suggestions(lua_State *L) {
+int suggest(lua_State *L) {
 
 	struct VoikkoHandle *handle;
 	char **suggestions;
@@ -186,7 +186,7 @@ int get_suggestions(lua_State *L) {
 
 const luaL_Reg voikko_funcs[] = {
 
-	{"get_suggestions", get_suggestions},
+	{"suggest", suggest},
 	{"hyphenate", hyphenate},
 	{"set_option", set_option},
 	/* {"spell_check", spell_check}, */
