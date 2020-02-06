@@ -18,10 +18,17 @@ struct VoikkoHandle *lvoikko_checkhandle(lua_State *L, int index) {
 
 	/* Get the referenced handle */
 	const int ref = lua_tointeger(L, -1);
+	/* Pop the integer value from the stack */
+	lua_pop(L, 1);
 	lua_rawgeti(L, index, ref);
 
+	struct VoikkoHandle *handle = lua_touserdata(L, -1);
+
+	/* Pop the light userdata value from the stack */
+	lua_pop(L, 1);
+
 	/* Return the handle */
-	return lua_touserdata(L, -1);
+	return handle;
 }
 
 /***
@@ -75,7 +82,7 @@ Hyphenates the given word in UTF-8 encoding.
 @tparam ?bool allow_context_changes specifies wheter hyphens may be inserted even if they alter the word in unhyphenated form (default `true`).
 @treturn string where hyphens are inserted in all hyphenation points
 */
-int insert_hyphens(lua_State *L)
+int hyphenate(lua_State *L)
 {
 	/* Arguments */
 	struct VoikkoHandle *handle = lvoikko_checkhandle(L, 1);
@@ -87,14 +94,17 @@ int insert_hyphens(lua_State *L)
 	if (!lua_isnoneornil(L, 3))
 		hyphen = luaL_checkstring(L, 3);
 	if (!lua_isnoneornil(L, 4))
-		allow_context_changes = luaL_checkinteger(L, 4);
-
+		allow_context_changes = lua_toboolean(L, 4);
 
 	/* Get the hyphenated string */
 	char *hyphenated = voikkoInsertHyphensCstr(handle, word, hyphen, allow_context_changes);
 
-	/* Return the hyphenated string */
 	lua_pushstring(L, hyphenated);
+
+	/* Free the resources */
+	voikkoFreeCstr(hyphenated);
+
+	/* Return the hyphenated string */
 	return 1;
 }
 
@@ -169,7 +179,7 @@ int terminate(lua_State *L)
 const luaL_Reg methods[] = {
 
 	{"get_hyphenation_pattern", get_hyphenation_pattern},
-	/* {"insert_hyphens", insert_hyphens}, */
+	{"hyphenate", hyphenate},
 	{"suggest", suggest},
 	{"spell", spell},
 #if LUA_VERSION_NUM < 502

@@ -36,6 +36,35 @@ describe("tests", function ()
 
    end)
 
+   describe("hyphenate", function ()
+
+      it("should hyphenate correctly the word \"kukkaruukku\"", function ()
+         local word = voikko:hyphenate("kukkaruukku")
+         assert.are.equals("kuk-ka-ruuk-ku", word)
+      end)
+
+      it("should hyphenate correctly the word \"oleskeluyhteiskunta\" and use \"_\" as a hyphen", function ()
+         local word = voikko:hyphenate("oleskeluyhteiskunta", "_")
+         assert.are.equals("o_les_ke_lu_yh_teis_kun_ta", word)
+      end)
+
+      it("should hyphenate correctly the word \"sillisalaatti\" and use \"\\-\" as a hyphen", function ()
+         local word = voikko:hyphenate("sillisalaatti", "\\-")
+         assert.are.equals("sil\\-li\\-sa\\-laat\\-ti", word)
+      end)
+
+      it("should allow context change when hyphenating the word \"vaa'an\" using \"&shy;\" as a hyphen", function ()
+         local word = voikko:hyphenate("vaa'an", "&shy;", true)
+         assert.are.equals("vaa&shy;an", word)
+      end)
+
+      it("should not allow context change when hyphenating the word \"vaa'an\" using \"&shy;\" as a hyphen", function ()
+         local word = voikko:hyphenate("vaa'an", "&shy;", false)
+         assert.are.equals("vaa'an", word)
+      end)
+
+   end)
+
    describe("spell", function ()
 
       it("should give return 1 (spell ok)", function ()
