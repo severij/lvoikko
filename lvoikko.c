@@ -30,9 +30,9 @@ A Voikko class
 */
 
 /***
-Hyphenates the given word in UTF-8 encoding.
-@function hyphenate
-@tparam string word word to hyphenate.
+Get hyphenation pattern of the given word in UTF-8 encoding.
+@function get_hyphenation_pattern
+@tparam string word word from which the hyphenation pattern will be created.
 @treturn[1] string containing the hyphenation using the following notation:
 
 - `' '` = no hyphenation at this character,
@@ -40,9 +40,9 @@ Hyphenates the given word in UTF-8 encoding.
         is preserved in the hyphenated form),
 - `'='` = hyphenation point (character at this position
         is replaced by the hyphen.)
-@treturn[2] nil when error occurs during hyphenation.
+@treturn[2] nil when error occurs during the creation of the pattern.
 */
-int hyphenate(lua_State *L) {
+int get_hyphenation_pattern(lua_State *L) {
 
 	/* Arguments */
 	struct VoikkoHandle *handle = lvoikko_checkhandle(L, 1);
@@ -168,7 +168,7 @@ int terminate(lua_State *L)
 
 const luaL_Reg methods[] = {
 
-	{"hyphenate", hyphenate},
+	{"get_hyphenation_pattern", get_hyphenation_pattern},
 	/* {"insert_hyphens", insert_hyphens}, */
 	{"suggest", suggest},
 	{"spell", spell},
