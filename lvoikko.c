@@ -164,6 +164,89 @@ int suggest(lua_State *L)
 	return 1;
 }
 
+int get_grammar_errors(lua_State *L) {
+
+	/* Arguments */
+	struct VoikkoHandle *handle = lvoikko_checkhandle(L, 1);
+	const char *text = luaL_checkstring(L, 2);
+	const char *lang = luaL_checkstring(L, 3);
+
+	int error_code, error_start_pos, error_len, skip_errors, i;
+	size_t paragraph_len;
+	char *paragraph, *description;
+	char **suggestions;
+
+	struct VoikkoGrammarError *grammar_error;
+
+	/* Create a table for grammar errors, that will be returned in the end of the function */
+	lua_newtable(L);
+
+	paragraph = strtok(text, "\n");
+
+	while (paragraph) {
+	
+		paragraph_len = strlen(paragraph);
+		skip_errors = 0;
+
+		while (1) {
+
+			grammar_error = voikkoNextGrammarErrorCstr(handle, paragraph, paragraph_len, 0, skip_errors);
+
+			if (!grammar_error) break;
+
+			/* Single grammar error */
+			lua_newtable(L);
+
+			/* Error code */
+			lua_pushstring(L, "code");
+			error_code = voikkoGetGrammarErrorCode(grammar_error);
+			lua_pushinteger(L, error_code);
+			lua_settable(L, -3);
+
+			/* Start position of the grammar error */
+			lua_pushstring(L, "start_position");
+			error_start_pos = voikkoGetGrammarErrorStartPos(grammar_error);
+			lua_pushinteger(L, error_start_pos);
+			lua_settable(L, -3);
+
+			/* Length of the grammar error */
+			lua_pushstring(L, "length");
+			error_len = voikkoGetGrammarErrorLength(grammar_error);
+			lua_pushinteger(L, error_len);
+			lua_settable(L, -3);
+
+			/* Short description of the grammar error */
+			lua_pushstring(L, "description");
+			description = voikkoGetGrammarErrorShortDescription(grammar_error, lang);
+			lua_pushstring(L, description);
+			lua_settable(L, -3);
+			voikkoFreeErrorMessageCstr(description);
+
+			/* Suggestions */
+			suggestions = voikkoGetGrammarErrorSuggestions(grammar_error);
+			if (suggestions) {
+				lua_pushstring(L, "suggestions");
+				lua_newtable(L);
+				for (i = 0; suggestions[i]; i++) {
+					lua_pushstring(L, suggestions[i]);
+					lua_seti(L, -2, i);
+				}
+				lua_settable(L, -3);
+				voikkoFreeCstrArray(suggestions);
+			}
+
+			/* Put the details of the grammar error into the grammar errors table */
+			lua_seti(L, -2, skip_errors);
+
+			skip_errors++;
+		}
+
+		paragraph = strtok(NULL, "\n");
+	}
+
+	return 1;
+}
+
 
 int raise_access_error(lua_State *L) {
 	return luaL_error(L, "access error");
@@ -178,6 +261,7 @@ int terminate(lua_State *L)
 
 const luaL_Reg methods[] = {
 
+	{"get_grammar_errors", get_grammar_errors},
 	{"get_hyphenation_pattern", get_hyphenation_pattern},
 	{"hyphenate", hyphenate},
 	{"suggest", suggest},
