@@ -10,25 +10,31 @@
 #include <lauxlib.h>
 #include <libvoikko/voikko.h>
 
-struct VoikkoHandle *lvoikko_checkhandle(lua_State *L, int index) {
-	
-	/* Get handle reference id */
-	lua_pushstring(L, "__handle");
-	lua_gettable(L, index);
+struct VoikkoHandle *lvoikko_checkhandle(lua_State *L, int index)
+{
+	// Check that value at index 1 is a table.
+	luaL_checktype(L, index, LUA_TTABLE);
 
-	/* Get the referenced handle */
-	const int ref = lua_tointeger(L, -1);
-	/* Pop the integer value from the stack */
-	lua_pop(L, 1);
-	lua_rawgeti(L, index, ref);
+	lua_getfield(L, index, "__handle"); // Get the handle ref.
+
+	// Check that the table has the key "__handle".
+	if (lua_isnoneornil(L, -1))
+		luaL_error(L, "The table does not contain a Voikko handle.");
+
+	// Check that the value on top of the stack is an integer.
+	const int ref = luaL_checkinteger(L, -1); 
+
+	lua_pop(L, 1); // The topmost value isn't needed anymore, so pop it.
+	lua_rawgeti(L, index, ref); // Get the light userdata (pointer to VoikkoHandle).
 
 	struct VoikkoHandle *handle = lua_touserdata(L, -1);
 
-	/* Pop the light userdata value from the stack */
-	lua_pop(L, 1);
+	// If handle is NULL, the value at index -1 cannot be a VoikkoHandle.
+	if (!handle) luaL_error(L, "Failed to get the handle.");
 
-	/* Return the handle */
-	return handle;
+	lua_pop(L, 1); // The light userdata isn't needed on the stack, so pop it.
+
+	return handle; // Return the pointer to VoikkoHandle.
 }
 
 /***
